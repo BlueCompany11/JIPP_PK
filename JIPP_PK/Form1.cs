@@ -27,9 +27,15 @@ namespace JIPP_PK
             AnimationFinishedHandler += (
                 (value, nameOfVariable) =>  //value to int, nameOfVariable to string wywoałanie metody AnimationFinishedHandler(2,"asd") przypisze tym obiektom odpowiednio 2 i "asd"
                 {
-                    //zatrzymuje timery
-                    circleTimer.Stop();
-                    starTimer.Stop();
+                    //zatrzymuje timer w zaleznosci od nazwy podanej
+                    if (nameOfVariable == nameof(circleSkalar))
+                    {
+                        circleTimer.Stop();
+                    }
+                    else if (nameOfVariable == nameof(starIteration))
+                    {
+                        starTimer.Stop();
+                    }
                     //pojawia sie okno czy kontynuowac
                     DialogResult dialogResult = MessageBox.Show("Obiekt " + nameOfVariable + " = " + value.ToString()+"\n"+"Kontynuować rysowanie?", "Zdarzenie", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
@@ -87,20 +93,30 @@ namespace JIPP_PK
         }
 
         System.Timers.Timer starTimer;
-        int starAngle = 10;
+        int starIteration = 0;
         Graphics gStar;
         private void buttonGwiazdyStart_Click(object sender, EventArgs e)
         {
+            //to samo co buttonOkregiStart_Click
             starTimer.Elapsed += StarAnimation;
             starTimer.AutoReset = true;
             starTimer.Enabled = true;
         }
         void StarAnimation(object sender, EventArgs e)
         {
+            //tutaj w tym rysowaniu bylo troche przypadku
+            //ogolnie rotate to obracanie obrazu, a translate to przesuwanie
+            //a skad takie wartosci? strzelalem i sie w koncu udalo
+            //koledze dalem slonce ktore bylo na srodku okregiem i stamtad wychodzily promienie, bardziej skomplikowane przeksztalcenia i nie pytal na oddaniu
             gStar.RotateTransform(50);
-            starAngle += 20;
-            gStar.TranslateTransform(10, 0);
-            gStar.DrawLine(new Pen(Color.Yellow, 3), groupBoxGwiazda.Width, groupBoxGwiazda.Height, 25, 10);
+            gStar.TranslateTransform(20, 0);
+            gStar.DrawLine(new Pen(Color.Yellow, 3), groupBoxGwiazda.Width, groupBoxGwiazda.Height, groupBoxGwiazda.Width/5, groupBoxGwiazda.Height/5);
+            starIteration++;
+            if (starIteration > 30)
+            {
+                //zmien wartosc na 40 jesli chcesz by sie skonczylo calkowicie rysowac zanim zglosi zapytanie
+                AnimationFinishedHandler(starIteration, nameof(starIteration));
+            }
         }
 
         private void buttonGwiazdyStop_Click(object sender, EventArgs e)

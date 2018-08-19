@@ -99,7 +99,7 @@
             this.groupBoxGwiazda.Size = new System.Drawing.Size(327, 268);
             this.groupBoxGwiazda.TabIndex = 3;
             this.groupBoxGwiazda.TabStop = false;
-            this.groupBoxGwiazda.Text = "Animacja gwiazdy";
+            this.groupBoxGwiazda.Text = "Słoneczko";
             // 
             // buttonGwiazdyStart
             // 
