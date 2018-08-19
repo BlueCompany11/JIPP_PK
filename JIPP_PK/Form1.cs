@@ -15,27 +15,31 @@ namespace JIPP_PK
         public Form1()
         {
             InitializeComponent();
+            //towrze obiekty po ktorych bede rysowal
+            //groupBoxOkrag to ten obiekt graficzny podpisany Animacja okregów
             gCircle = groupBoxOkrag.CreateGraphics();
+            //analogicznie
             gStar = groupBoxGwiazda.CreateGraphics();
+            //inicjuje timery ktore sa juz gotowe do uzycia i tylko czekaja az zostana uruchomione 
             circleTimer = new System.Timers.Timer(100);
             starTimer = new System.Timers.Timer(100);
+            //dodaje do zdarzenia wyrazenie lambda ktore bedzie wywolywane za kazdym razem gdy wywolamy metode AnimationFinishedHandler(int value, string nameOfVariable)
             AnimationFinishedHandler += (
-                (value, nameOfVariable) =>
+                (value, nameOfVariable) =>  //value to int, nameOfVariable to string wywoałanie metody AnimationFinishedHandler(2,"asd") przypisze tym obiektom odpowiednio 2 i "asd"
                 {
+                    //zatrzymuje timery
                     circleTimer.Stop();
                     starTimer.Stop();
+                    //pojawia sie okno czy kontynuowac
                     DialogResult dialogResult = MessageBox.Show("Obiekt " + nameOfVariable + " = " + value.ToString()+"\n"+"Kontynuować rysowanie?", "Zdarzenie", MessageBoxButtons.YesNo);
-                    circleTimer.Stop();
-                    starTimer.Stop();
                     if (dialogResult == DialogResult.Yes)
-                    {
+                    {   //jesli tak to je wznawiam
                         circleTimer.Start();
                         starTimer.Start();
                     }
                     else if (dialogResult == DialogResult.No)
                     {
-                        circleTimer.Stop();
-                        starTimer.Stop();
+                        //jesli nie to juz nic nie robie bo sa timery zatrzymane
                     }
 
                 }
@@ -50,7 +54,7 @@ namespace JIPP_PK
         Graphics gCircle;
         private void buttonOkregiStart_Click(object sender, EventArgs e)
         {
-            
+            //metoda do uruchomienia timera i przypisania do niego metody ktora rysuje okregi
             circleTimer.Elapsed += CircleAnimation;
             circleTimer.AutoReset = true;
             circleTimer.Enabled = true;
@@ -58,11 +62,14 @@ namespace JIPP_PK
         
         private void buttonOkregiStop_Click(object sender, EventArgs e)
         {
+            //zatrzymuje timer i zabieram mu metode do tworzenia okregow (inaczej po kilkukrotnym wcisnieciu przycisku start mialbym kilka razy przypisana ta metode czyli by sie wykonywala kilka razy niepotrzebnie, bo wystarczy raz cos namalowac, a nie kilka razy po tym samym
             circleTimer.Stop();
+            circleTimer.Elapsed -= CircleAnimation;
         }
 
         void CircleAnimation(object sender, EventArgs e)
         {
+            //pozmieniaj sobie wartosci by popatrzec co za co odpowiada
             int x = 50;
             int y = 50;
             double marginMultiplayer = 0.5;
@@ -72,6 +79,7 @@ namespace JIPP_PK
             circleSkalar++;
             if (circleSkalar > 20)
             {
+                //zglaszam to zdarzenie i podaje mu argumenty odpowiadajace animacji okregow. nameof(asd) zwroci "asd"
                 AnimationFinishedHandler(circleSkalar, nameof(circleSkalar));
             }
             gCircle.DrawEllipse(Pens.ForestGreen, centerX - radius, centerY - radius,
@@ -89,24 +97,16 @@ namespace JIPP_PK
         }
         void StarAnimation(object sender, EventArgs e)
         {
-            //groupBoxGwiazda
-            int x = 2;
-            int y = 20;
-            Point firstPoint = new Point(groupBoxGwiazda.Width / y, groupBoxGwiazda.Height / y);
-            Point secondPoint = new Point(groupBoxGwiazda.Width/5, groupBoxGwiazda.Height/5 );
-            gStar.TranslateTransform(groupBoxGwiazda.Width / x, groupBoxGwiazda.Height / x);
-            gStar.RotateTransform(starAngle);
+            gStar.RotateTransform(50);
             starAngle += 20;
-            if (starAngle > 200)
-            {
-                AnimationFinishedHandler(starAngle, nameof(starAngle));
-            }
-            gStar.DrawLines(Pens.SeaGreen, new Point[] { firstPoint, secondPoint });
+            gStar.TranslateTransform(10, 0);
+            gStar.DrawLine(new Pen(Color.Yellow, 3), groupBoxGwiazda.Width, groupBoxGwiazda.Height, 25, 10);
         }
 
         private void buttonGwiazdyStop_Click(object sender, EventArgs e)
         {
             starTimer.Stop();
+            starTimer.Elapsed -= StarAnimation;
         }
     }
 }
